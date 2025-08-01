@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notificação em tempo real</title>
+  <style>
+    body {
+      background-color: black;
+      color: yellow;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: yellow;
+      text-align: center;
+      width: 100%;
+      margin: 0 auto 20px auto;
+    }
+    #notificacoes {
+      margin-top: 20px;
+    }
+    .notificacao {
+      background: #222;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      color: yellow;
+      font-weight: bold;
+    }
+  </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h1>Notificação em tempo real</h1>
+  <div id="notificacoes"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0Jaw-Cy-wUyl-v0gqvkd6Pdetn1XyxSE",
+      authDomain: "cheguei-edu.firebaseapp.com",
+      databaseURL: "https://cheguei-edu-default-rtdb.firebaseio.com",
+      projectId: "cheguei-edu",
+      storageBucket: "cheguei-edu.firebasestorage.app",
+      messagingSenderId: "964811049899",
+      appId: "1:964811049899:web:b21112e0ee74298063e0ee"
+    };
+
+    // Inicializa Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Nó onde estão as notificações
+    const notificacoesRef = database.ref('cheguei');
+
+    const container = document.getElementById('notificacoes');
+
+    notificacoesRef.on('child_added', (snapshot) => {
+      const dados = snapshot.val();
+      console.log('Nova notificação recebida:', dados);
+      if(dados && dados.nomeAluno) {
+        const div = document.createElement('div');
+        div.classList.add('notificacao');
+        div.textContent = `Aluno: ${dados.nomeAluno} chegou!`;
+        container.appendChild(div);
+      }
+    });
+  </script>
+</body>
+</html>
