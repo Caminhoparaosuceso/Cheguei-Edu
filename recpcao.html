@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChegueiEdu - Recepção</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f0f0; text-align: center; }
+    .titulo-recepcao { margin-top: 20px; }
+    .notificacoes { display: flex; flex-direction: column-reverse; align-items: center; }
+    .card {
+      background: white;
+      padding: 15px;
+      margin: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      width: 300px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="titulo-recepcao">Notificações em Tempo Real</h1>
+  <div id="notificacoes" class="notificacoes"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    iniciarRecepcao();
+  </script>
+</body>
+</html>
