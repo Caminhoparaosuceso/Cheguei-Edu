@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recepção - Notificações em tempo real</title>
+  <style>
+    body {
+      background-color: black;
+      color: yellow;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin: 0 0 20px 0;
+      font-weight: bold;
+    }
+    #contador {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    #notificacoes {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0;
+      list-style: none;
+    }
+    .notificacao {
+      background: #222;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      color: yellow;
+      font-size: 16px;
+    }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h1>Notificações em Tempo Real</h1>
+  <div id="contador">0 notificações recebidas</div>
+  <ul id="notificacoes">
+    <li>Aguardando notificações...</li>
+  </ul>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0Jaw-Cy-wUyl-v0gqvkd6Pdetn1XyxSE",
+      authDomain: "cheguei-edu.firebaseapp.com",
+      databaseURL: "https://cheguei-edu-default-rtdb.firebaseio.com",
+      projectId: "cheguei-edu",
+      storageBucket: "cheguei-edu.firebasestorage.app",
+      messagingSenderId: "964811049899",
+      appId: "1:964811049899:web:b21112e0ee74298063e0ee"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const container = document.getElementById('notificacoes');
+    const contador = document.getElementById('contador');
+    const notificacoesRef = database.ref('checkins');
+
+    let totalNotificacoes = 0;
+    let notificacoesLista = [];
+
+    notificacoesRef.on('child_added', snapshot => {
+      const dados = snapshot.val();
+      totalNotificacoes++;
+
+      // Remove o texto "Aguardando notificações..." quando chegar a primeira notificação
+      if (totalNotificacoes === 1) {
+        container.innerHTML = '';
+      }
+
+      // Cria elemento de notificação
+      const li = document.createElement('li');
+      li.classList.add('notificacao');
+      li.textContent = `Aluno: ${dados.aluno} | Ação: ${dados.acao} | Turma: ${dados.turma} | Horário: ${dados.horario}`;
+
+      // Adiciona no começo da lista
+      container.insertBefore(li, container.firstChild);
+      notificacoesLista.unshift(li);
+
+      // Limita a lista para 20 notificações
+      if (notificacoesLista.length > 20) {
+        const liRemover = notificacoesLista.pop();
+        container.removeChild(liRemover);
+      }
+
+      // Atualiza contador
+      contador.textContent = `${totalNotificacoes} notificações recebidas`;
+    });
+  </script>
+</body>
+</html>
