@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recepção - Notificações em tempo real</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      background-color: black;
+      color: yellow;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin: 0 0 10px 0;
+      font-weight: bold;
+    }
+    #botoes {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    button {
+      background: yellow;
+      color: black;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    button:hover {
+      background: orange;
+    }
+    #notificacoes {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0;
+      list-style: none;
+    }
+    .notificacao {
+      background: #222;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      color: yellow;
+      font-size: 16px;
+    }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h1>Notificações em Tempo Real</h1>
+  <div id="botoes">
+    <button onclick="apagarNotificacoes()">
+      <i class="fa-solid fa-trash"></i> Apagar todas as notificações
+    </button>
+  </div>
+  <ul id="notificacoes">
+    <li>Aguardando notificações...</li>
+  </ul>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0Jaw-Cy-wUyl-v0gqvkd6Pdetn1XyxSE",
+      authDomain: "cheguei-edu.firebaseapp.com",
+      databaseURL: "https://cheguei-edu-default-rtdb.firebaseio.com",
+      projectId: "cheguei-edu",
+      storageBucket: "cheguei-edu.firebasestorage.app",
+      messagingSenderId: "964811049899",
+      appId: "1:964811049899:web:b21112e0ee74298063e0ee"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const container = document.getElementById('notificacoes');
+
+    function adicionarNotificacao(dados) {
+      if(container.children.length === 1 && container.children[0].textContent.includes('Aguardando')){
+        container.innerHTML = '';
+      }
+      const li = document.createElement('li');
+      li.classList.add('notificacao');
+      li.textContent = `Aluno: ${dados.aluno} | Ação: ${dados.acao} | Turma: ${dados.turma} | Horário: ${dados.horario}`;
+      container.appendChild(li);
+    }
+
+    // Carrega todas notificações existentes
+    database.ref('checkins').once('value').then(snapshot => {
+      const dados = snapshot.val();
+      if (dados) {
+        Object.values(dados).forEach(adicionarNotificacao);
+      }
+    });
+
+    // Escuta novas notificações em tempo real
+    database.ref('checkins').on('child_added', snapshot => {
+      adicionarNotificacao(snapshot.val());
+    });
+
+    // Função para apagar todas notificações
+    function apagarNotificacoes() {
+      if (confirm('Tem certeza que deseja apagar todas as notificações?')) {
+        database.ref('checkins').remove()
+          .then(() => {
+            alert('Todas as notificações foram apagadas!');
+            container.innerHTML = '<li>Aguardando notificações...</li>';
+          })
+          .catch(err => alert('Erro ao apagar: ' + err.message));
+      }
+    }
+  </script>
+</body>
+</html>
